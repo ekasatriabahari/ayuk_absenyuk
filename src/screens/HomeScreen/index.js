@@ -17,19 +17,27 @@ import Icon from 'react-native-vector-icons/Ionicons';
 const index = ({navigation}) => {
   const [location, setLocation] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+  const [nama, setNama] = useState('Eka Satria Bahari, A.Md.');
+  const [nip, setNip] = useState('199306062019031001');
+  const [gender, setGender] = useState('L');
 
   return (
     <SafeAreaView style={Styles.body}>
       <View>
         <Image source={BANNER} style={Styles.banner} />
-        <Image source={MALE} style={Styles.avatar} />
+        {gender == 'L' ? (
+          <Image source={MALE} style={Styles.avatar} />
+        ) : (
+          <Image source={FEMALE} style={Styles.avatar} />
+        )}
       </View>
       <View>
         <Text style={[Styles.fontBold, Styles.name, {fontSize: 20}]}>
-          Eka Satria Bahari
+          {nama}
         </Text>
         <Text style={[Styles.font, Styles.name, {fontSize: 12}]}>
-          NIP. 199306062019031001
+          NIP. {nip}
         </Text>
       </View>
       <View style={{alignContent: 'flex-start'}}>
@@ -44,11 +52,11 @@ const index = ({navigation}) => {
         <Text style={[Styles.font, Styles.lable]}>Jumat, 31 July 2020</Text>
         {location ? (
           <Text style={[Styles.font, Styles.lableGreen]}>
-            ✅ Anda dalam jangkauan Absen Online!
+            ✅ Anda dalam jangkauan Lokasi Kantor!
           </Text>
         ) : (
           <Text style={[Styles.font, Styles.lableRed]}>
-            ⛔ Anda diluar jangkauan Absen Online!!!
+            ⛔ Anda diluar jangkauan Lokasi Kantor!!!
           </Text>
         )}
       </View>
@@ -66,14 +74,14 @@ const index = ({navigation}) => {
           style={[Styles.btnAction]}
           onPress={() => absenDatang(navigation)}>
           <Text style={[Styles.fontBold, {fontSize: 16, color: '#fff'}]}>
-            <Icon name="ios-log-in" size={20} color="#fff" /> Absen Datang
+            <Icon name="ios-log-in" size={22} color="#fff" /> Absen Datang
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[Styles.btnAction]}
           onPress={() => absenPulang(navigation)}>
           <Text style={[Styles.fontBold, {fontSize: 16, color: '#fff'}]}>
-            <Icon name="ios-log-out" size={20} color="#fff" /> Absen Pulang
+            <Icon name="ios-log-out" size={22} color="#fff" /> Absen Pulang
           </Text>
         </TouchableOpacity>
       </View>
