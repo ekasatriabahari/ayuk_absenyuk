@@ -7,16 +7,22 @@ import {
   SafeAreaView,
   ScrollView,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import Icon from 'react-native-vector-icons/Ionicons';
 
+/* FETCH API */
+import FETCH from '../../functionHelper/APILists';
+
 /* Auth Context */
-import {AuthContext} from '../context';
+import {AuthContext} from '../../contexts/AuthContext';
 
 import BANNER from '../../assets/images/setting.png';
 import Styles from '../Styles';
 
 const index = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
   const [password, setPassword] = useState(null);
 
@@ -26,13 +32,28 @@ const index = () => {
     } else {
       setError(false);
     }
-    console.log({
-      password: password,
-      repass: val,
-    });
   };
 
   const {signOut} = useContext(AuthContext);
+
+  const logoutHandle = async () => {
+    let token = null;
+    let userId = null;
+    try {
+      token = await AsyncStorage.getItem('userToken');
+      userId = await AsyncStorage.getItem('userId');
+    } catch (e) {
+      console.log(e);
+    }
+    let res = await FETCH.logout(userId, token);
+    // if (res.status === 200) {
+    //   //   setIsLoading(true);
+    //   signOut();
+    // } else {
+    //   Alert.alert('Error!', 'Error!');
+    // }
+    console.log({userID: userId, token: token});
+  };
 
   return (
     <SafeAreaView style={[Styles.body, {marginBottom: 40}]}>
@@ -86,14 +107,14 @@ const index = () => {
           <TouchableOpacity style={[Styles.btnAction]}>
             <Text style={[Styles.fontBold, {fontSize: 16, color: '#fff'}]}>
               <Icon name="ios-checkmark-done-outline" size={22} color="#fff" />{' '}
-              Simpan
+              {isLoading ? <ActivityIndicator /> : 'Simpan'}
             </Text>
           </TouchableOpacity>
         </View>
         <View>
           <TouchableOpacity
             style={[Styles.btnAction]}
-            onPress={() => signOut()}>
+            onPress={() => logoutHandle()}>
             <Text style={[Styles.fontBold, {fontSize: 16, color: '#fff'}]}>
               <Icon name="ios-exit-outline" size={22} color="#fff" /> Keluar
             </Text>

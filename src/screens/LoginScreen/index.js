@@ -1,6 +1,5 @@
 import React, {useContext, useState} from 'react';
 import {
-  StyleSheet,
   Text,
   View,
   Image,
@@ -8,10 +7,14 @@ import {
   SafeAreaView,
   ScrollView,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
-import AsyncStorage from '@react-native-community/async-storage';
+
+/* Fetch API */
+import FETCH from '../../functionHelper/APILists';
+
 /* Auth Context */
-import {AuthContext} from '../context';
+import {AuthContext} from '../../contexts/AuthContext';
 
 import Styles from '../Styles';
 import LOGO from '../../assets/images/pic3.png';
@@ -19,10 +22,19 @@ import LOGO from '../../assets/images/pic3.png';
 const index = ({navigation}) => {
   const [userNip, setUserNip] = useState(null);
   const [userPassword, setUserPassword] = useState(null);
+
   const {signIn} = useContext(AuthContext);
 
-  const loginHandle = (userNip, userPassword) => {
-    const checkLogin = signIn(userNip, userPassword);
+  const loginHandle = async (userNip, userPassword) => {
+    if (userNip === null || userPassword === null) {
+      Alert.alert('Warning!', 'Isi Data Secara Lengkap!');
+    }
+    let res = await FETCH.login(userNip, userPassword);
+    if (res.status === 200) {
+      signIn(res);
+    } else {
+      Alert.alert('Warning!', 'NIP atau Password Salah!');
+    }
   };
 
   return (

@@ -7,21 +7,18 @@ import AsyncStorage from '@react-native-community/async-storage';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 /* Auth Context */
-import {AuthContext} from './context';
+import {AuthContext} from '../contexts/AuthContext';
 
 /* Screens */
 import LoginScreen from './LoginScreen';
 import HomeScreen from './HomeScreen';
 import LainnyaScreen from './HomeScreen/lainnya';
 import SettingScreen from './SettingScreen';
-import {Alert} from 'react-native';
 
 /* Loader */
 import LoaderScreen from '../components/Loading';
 
 const Stack = createStackNavigator();
-const Tab = createBottomTabNavigator();
-
 const HomeStack = () => {
   return (
     <Stack.Navigator initialRouteName="Home">
@@ -39,6 +36,7 @@ const HomeStack = () => {
   );
 };
 
+const Tab = createBottomTabNavigator();
 const HomeTabs = () => {
   return (
     <Tab.Navigator
@@ -77,12 +75,10 @@ const HomeTabs = () => {
   );
 };
 
-const appNav = ({navigation}) => {
+const appNav = () => {
   const initialLoginState = {
     isLoading: true,
     userToken: null,
-    userName: null,
-    userNip: null,
   };
 
   const loginReducer = (prevState, action) => {
@@ -98,14 +94,11 @@ const appNav = ({navigation}) => {
           ...prevState,
           isSignout: false,
           userToken: action.token,
-          userName: action.nama,
-          userNip: action.nip,
+          isLoading: false,
         };
       case 'SIGN_OUT':
         return {
           ...prevState,
-          userName: null,
-          userNip: null,
           userToken: null,
           isLoading: false,
         };
@@ -116,28 +109,20 @@ const appNav = ({navigation}) => {
 
   const authContext = useMemo(
     () => ({
-      signIn: async (userNip, password) => {
+      signIn: async (response) => {
         let userToken;
-        userToken = null;
-        if (userNip == '123' && password == '123') {
-          userToken = 'true';
-          try {
-            await AsyncStorage.setItem('userToken', userToken);
-            await AsyncStorage.setItem('userNip', userNip);
-          } catch (e) {
-            console.log(e);
-          }
-        } else if (userNip == null || password == null) {
-          Alert.alert('Warning!', 'Lengkapi Data!');
-        } else {
-          Alert.alert('Warning!', 'NIP atau Password Salah!');
+        userToken = response.token;
+        try {
+          await AsyncStorage.setItem('userToken', response.token);
+          await AsyncStorage.setItem('userId', response.id_pegawai);
+        } catch (e) {
+          console.log(e);
         }
-        dispatch({type: 'SIGN_IN', nip: userNip, token: userToken});
+        dispatch({type: 'SIGN_IN', token: userToken});
       },
       signOut: async () => {
         try {
           await AsyncStorage.removeItem('userToken');
-          await AsyncStorage.removeItem('userNip');
         } catch (e) {
           console.log(e);
         }
@@ -147,17 +132,20 @@ const appNav = ({navigation}) => {
     [],
   );
 
-  useEffect(() => {
-    setTimeout(async () => {
-      let userToken;
-      userToken = null;
-      try {
-        userToken = await AsyncStorage.getItem('userToken');
-      } catch (e) {
-        console.log(e);
-      }
+  const getToken = async () => {
+    let userToken;
+    userToken = null;
+    try {
+      userToken = await AsyncStorage.getItem('userToken');
+    } catch (e) {
+      console.log(e);
+    }
+    dispatch({type: 'RESTORE_TOKEN', token: userToken});
+  };
 
-      dispatch({type: 'RESTORE_TOKEN', token: userToken});
+  useEffect(() => {
+    setTimeout(() => {
+      getToken();
     }, 1000);
   }, []);
 
