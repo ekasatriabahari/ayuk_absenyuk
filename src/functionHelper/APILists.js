@@ -28,7 +28,7 @@ exports.login = async function (account, password) {
 /* Logout API */
 exports.logout = async function (idPegawai, token) {
   let headers = new Headers();
-  headers.append('Content-Type', 'multipart/form-data');
+  headers.append('Content-Type', 'application/json');
   headers.append('Id-Pegawai', idPegawai);
   headers.append('Token', token);
   let body = {};

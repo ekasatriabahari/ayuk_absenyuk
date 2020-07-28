@@ -8,6 +8,7 @@ import {
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -20,6 +21,7 @@ import {AuthContext} from '../../contexts/AuthContext';
 
 import BANNER from '../../assets/images/setting.png';
 import Styles from '../Styles';
+import LoadingScreen from '../../components/Loading';
 
 const index = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -45,15 +47,34 @@ const index = () => {
     } catch (e) {
       console.log(e);
     }
-    let res = await FETCH.logout(userId, token);
-    // if (res.status === 200) {
-    //   //   setIsLoading(true);
-    //   signOut();
-    // } else {
-    //   Alert.alert('Error!', 'Error!');
-    // }
-    console.log({userID: userId, token: token});
+
+    // let res = await FETCH.logout(userId, token);
+
+    let headers = new Headers();
+    headers.append('Id-Pegawai', userId);
+    headers.append('Token', token);
+    let result = await fetch(
+      'https://dpu.ntbprov.go.id/backend_absensi/logout',
+      {
+        method: 'POST',
+        headers: headers,
+        body: {},
+      },
+    );
+    let res = await result.json();
+    if (res.status === 200) {
+      setIsLoading(true);
+      signOut();
+    } else {
+      console.log(res);
+      Alert.alert('Error!', 'Error!');
+    }
+    console.log(res);
   };
+
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
 
   return (
     <SafeAreaView style={[Styles.body, {marginBottom: 40}]}>
@@ -107,7 +128,7 @@ const index = () => {
           <TouchableOpacity style={[Styles.btnAction]}>
             <Text style={[Styles.fontBold, {fontSize: 16, color: '#fff'}]}>
               <Icon name="ios-checkmark-done-outline" size={22} color="#fff" />{' '}
-              {isLoading ? <ActivityIndicator /> : 'Simpan'}
+              Simpan
             </Text>
           </TouchableOpacity>
         </View>
