@@ -29,16 +29,11 @@ async function Post(url, body = {}, headers = new Headers()) {
   headers.set('Pragma', 'no-cache');
   headers.set('Expires', '0');
 
-  let data = new FormData();
-  for (let key in body) {
-    data.append(key, body[key]);
-  }
-
   let response = await fetch(url, {
     method: 'POST',
     timeout: TIMEOUT,
     headers: headers,
-    body: data,
+    body: body,
   });
   let respJson = await response.json();
   return respJson;

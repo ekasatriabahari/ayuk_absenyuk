@@ -48,20 +48,7 @@ const index = () => {
       console.log(e);
     }
 
-    // let res = await FETCH.logout(userId, token);
-
-    let headers = new Headers();
-    headers.append('Id-Pegawai', userId);
-    headers.append('Token', token);
-    let result = await fetch(
-      'https://dpu.ntbprov.go.id/backend_absensi/logout',
-      {
-        method: 'POST',
-        headers: headers,
-        body: {},
-      },
-    );
-    let res = await result.json();
+    let res = await FETCH.logout(userId, token);
     if (res.status === 200) {
       setIsLoading(true);
       signOut();

@@ -40,10 +40,108 @@ const index = ({navigation}) => {
     await setFoto(res.foto_profil);
   };
 
+  const cekInHandle = async () => {
+    let token = null;
+    let userId = null;
+    try {
+      token = await AsyncStorage.getItem('userToken');
+      userId = await AsyncStorage.getItem('userId');
+    } catch (e) {
+      console.log(e);
+    }
+
+    let res = await FETCH.cekIn(userId, token);
+    if (res.status === 200) {
+      console.log(res);
+      Alert.alert('Berhasil!', res.result);
+    } else {
+      console.log(res);
+      Alert.alert('Gagal!', res.result);
+    }
+  };
+
+  const cekOutHandle = async () => {
+    let token = null;
+    let userId = null;
+    try {
+      token = await AsyncStorage.getItem('userToken');
+      userId = await AsyncStorage.getItem('userId');
+    } catch (e) {
+      console.log(e);
+    }
+
+    let res = await FETCH.cekOut(userId, token);
+    if (res.status === 200) {
+      console.log(res);
+      Alert.alert('Berhasil!', res.result);
+    } else {
+      console.log(res);
+      Alert.alert('Gagal!', res.result);
+    }
+  };
+
+  const absenDatang = (navigation) => {
+    return Alert.alert(
+      'Absen Datang',
+      'Anda Akan Melakukan Absensi Datang',
+      [
+        {
+          text: 'Lainnya',
+          onPress: () => {
+            navigation.navigate('Lainnya');
+          },
+        },
+        {
+          text: 'Batal',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {
+          text: 'Hadir',
+          onPress: () =>
+            location
+              ? cekInHandle()
+              : Alert.alert('Gagal!', 'Anda di luar jangkauan Absen!'),
+        },
+      ],
+      {cancelable: false},
+    );
+  };
+
+  const absenPulang = (navigation) => {
+    return Alert.alert(
+      'Absen Pulang',
+      'Anda Akan Melakukan Absensi Pulang',
+      [
+        {
+          text: 'Lainnya',
+          onPress: () => navigation.navigate('Lainnya'),
+        },
+        {
+          text: 'Batal',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {
+          text: 'Hadir',
+          onPress: () =>
+            location
+              ? cekOutHandle()
+              : Alert.alert('Gagal!', 'Anda di luar jangkauan Absen!'),
+        },
+      ],
+      {cancelable: false},
+    );
+  };
+
   useEffect(() => {
-    setTimeout(() => {
-      getData();
-    }, 500);
+    let mounted = true;
+    if (mounted) {
+      setTimeout(() => {
+        getData();
+      }, 1000);
+    }
+    return () => (mounted = false);
   }, []);
 
   return (
@@ -61,7 +159,7 @@ const index = ({navigation}) => {
         )}
       </View>
       <View>
-        <Text style={[Styles.fontBold, Styles.name, {fontSize: 20}]}>
+        <Text style={[Styles.fontBold, Styles.name, {fontSize: 18}]}>
           {nama}
         </Text>
         <Text style={[Styles.font, Styles.name, {fontSize: 12}]}>
@@ -97,67 +195,23 @@ const index = ({navigation}) => {
           </Text>
         </TouchableOpacity>
       </View>
-      {location && (
-        <View>
-          <TouchableOpacity
-            style={[Styles.btnAction]}
-            onPress={() => absenDatang(navigation)}>
-            <Text style={[Styles.fontBold, {fontSize: 16, color: '#fff'}]}>
-              <Icon name="ios-log-in" size={22} color="#fff" /> Absen Datang
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[Styles.btnAction]}
-            onPress={() => absenPulang(navigation)}>
-            <Text style={[Styles.fontBold, {fontSize: 16, color: '#fff'}]}>
-              <Icon name="ios-log-out" size={22} color="#fff" /> Absen Pulang
-            </Text>
-          </TouchableOpacity>
-        </View>
-      )}
+      <View>
+        <TouchableOpacity
+          style={[Styles.btnAction]}
+          onPress={() => absenDatang(navigation)}>
+          <Text style={[Styles.fontBold, {fontSize: 16, color: '#fff'}]}>
+            <Icon name="ios-log-in" size={22} color="#fff" /> Absen Datang
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[Styles.btnAction]}
+          onPress={() => absenPulang(navigation)}>
+          <Text style={[Styles.fontBold, {fontSize: 16, color: '#fff'}]}>
+            <Icon name="ios-log-out" size={22} color="#fff" /> Absen Pulang
+          </Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
-  );
-};
-
-const absenDatang = (navigation) => {
-  return Alert.alert(
-    'Absen Datang',
-    'Anda Akan Melakukan Absensi Datang',
-    [
-      {
-        text: 'Lainnya',
-        onPress: () => {
-          navigation.navigate('Lainnya');
-        },
-      },
-      {
-        text: 'Batal',
-        onPress: () => console.log('Cancel Pressed'),
-        style: 'cancel',
-      },
-      {text: 'Hadir', onPress: () => console.log('OK Pressed')},
-    ],
-    {cancelable: false},
-  );
-};
-
-const absenPulang = (navigation) => {
-  return Alert.alert(
-    'Absen Pulang',
-    'Anda Akan Melakukan Absensi Pulang',
-    [
-      {
-        text: 'Lainnya',
-        onPress: () => navigation.navigate('Lainnya'),
-      },
-      {
-        text: 'Batal',
-        onPress: () => console.log('Cancel Pressed'),
-        style: 'cancel',
-      },
-      {text: 'Hadir', onPress: () => console.log('OK Pressed')},
-    ],
-    {cancelable: false},
   );
 };
 

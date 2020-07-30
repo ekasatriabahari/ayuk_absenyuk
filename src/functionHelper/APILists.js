@@ -17,10 +17,11 @@ const UPDATEFOTO = HOSTNAME + 'profil/update_foto';
 exports.login = async function (account, password) {
   let headers = new Headers();
   headers.append('Content-Type', 'multipart/form-data');
-  let body = {
-    account: account,
-    password: password,
-  };
+
+  let body = new FormData();
+  body.append('account', account);
+  body.append('password', password);
+
   let res = await HttpRequest.Post(LOGIN, body, headers);
   return res;
 };
@@ -31,8 +32,7 @@ exports.logout = async function (idPegawai, token) {
   headers.append('Content-Type', 'application/json');
   headers.append('Id-Pegawai', idPegawai);
   headers.append('Token', token);
-  let body = {};
-  let res = await HttpRequest.Post(LOGOUT, body, headers);
+  let res = await HttpRequest.Post(LOGOUT, headers);
   return res;
 };
 
@@ -49,23 +49,21 @@ exports.getHome = async function (idPegawai, token) {
 };
 
 /* Cek in API */
-exports.cekIn = async function (idPegawai, token) {
+exports.cekIn = async function (idPegawai, token, body) {
   let headers = new Headers();
   headers.append('Content-Type', 'application/json');
   headers.append('Id-Pegawai', idPegawai);
   headers.append('Token', token);
-  let body = {};
   let res = await HttpRequest.Post(CEKIN, body, headers);
   return res;
 };
 
 /* Cek out API */
-exports.cekIn = async function (idPegawai, token) {
+exports.cekOut = async function (idPegawai, token, body) {
   let headers = new Headers();
   headers.append('Content-Type', 'application/json');
   headers.append('Id-Pegawai', idPegawai);
   headers.append('Token', token);
-  let body = {};
   let res = await HttpRequest.Post(CEKOUT, body, headers);
   return res;
 };
@@ -77,14 +75,18 @@ exports.others = async function (idPegawai, token, body) {
   headers.append('Id-Pegawai', idPegawai);
   headers.append('Token', token);
 
-  let res = await HttpRequest.Post(OTHERS, body, headers);
+  let data = new FormData();
+  for (let key in body) {
+    data.append(key, body[key]);
+  }
+  let res = await HttpRequest.Post(OTHERS, data, headers);
   return res;
 };
 
 /* History API */
 exports.history = async function (idPegawai, token, body) {
   let headers = new Headers();
-  headers.append('Content-Type', 'application/json');
+  headers.append('Content-Type', 'multipart/form-data');
   headers.append('Id-Pegawai', idPegawai);
   headers.append('Token', token);
 
